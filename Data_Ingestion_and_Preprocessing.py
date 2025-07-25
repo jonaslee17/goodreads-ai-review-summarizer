@@ -25,18 +25,30 @@ books_df.head()
 
 ## Cleaning the data
 
-# Drop reviews without actual text
+# Drop reviews with no actual text
 reviews_df = reviews_df.dropna(subset=['review_content'])
+
 # Rid of leading/trailing whitespace in review_content
 reviews_df['review_content'] = reviews_df['review_content'].str.strip()
 
-# Drop rows where review content is very short (spam?)
+# Drop rows where review content is very short (less than 30 characters)
 reviews_df = reviews_df[reviews_df['review_content'].str.len() > 30]
 
-# Drop rows without review_rating
+# Drop rows with no review_rating
 reviews_df = reviews_df[reviews_df['review_rating'].notna()]
 
 # Preview first 10 cleaned reviews
 print(reviews_df[['review_content', 'review_rating']].head(10))
 
 ## Grouping reviews by book
+
+grouped_reviews = reviews_df.groupby('book_id')['review_content'].apply(list).reset_index()
+
+# Makes sure book_id is string in both DataFrames
+book_details_df['book_id'] = book_details_df['book_id'].astype(str)
+grouped_reviews['book_id'] = grouped_reviews['book_id'].astype(str)
+
+# Merging the reviews with each book
+books_with_reviews = pd.merge(book_details_df, grouped_reviews, on = 'book_id', how = 'inner')
+print(books_with_reviews[['book_id', 'book_title', 'review_content']].head())
+
