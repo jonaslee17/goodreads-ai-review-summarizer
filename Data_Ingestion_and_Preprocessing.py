@@ -52,3 +52,5 @@ grouped_reviews['book_id'] = grouped_reviews['book_id'].astype(str)
 books_with_reviews = pd.merge(book_details_df, grouped_reviews, on = 'book_id', how = 'inner')
 print(books_with_reviews[['book_id', 'book_title', 'review_content']].head())
 
+books_with_reviews.to_csv("reviews_grouped_per_book.csv", index=False)
+
